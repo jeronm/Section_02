@@ -1,15 +1,23 @@
+#pragma once
+
 #include "FBullCowGame.h"
 #include <map>
-#define TMap std::map
 
+// Unreal syntax
+#define TMap std::map
 using int32 = int;
 
-FBullCowGame::FBullCowGame() { Reset(); }
+FBullCowGame::FBullCowGame() { Reset(); } // default constructor
 
-int32 FBullCowGame::GetMaxTries() const { return MyMaxTries; }
 int32 FBullCowGame::GetCurrentTry() const { return MyCurrentTry; }
 int32 FBullCowGame::GetHiddenWordLength() const { return MyHiddenWord.length(); }
 bool FBullCowGame::IsGameWon() const { return bGameIsWon; }
+
+int32 FBullCowGame::GetMaxTries() const 
+{ 
+    TMap<int32, int32> WordLengthToMaxTries{ {3,4}, {4,7}, {5,10}, {6,16}, {7,20} };
+    return WordLengthToMaxTries[MyHiddenWord.length()];
+}
 
 EGuessStatus FBullCowGame::CheckGuessValidity(FString Guess) const
 {
@@ -17,9 +25,9 @@ EGuessStatus FBullCowGame::CheckGuessValidity(FString Guess) const
     {
         return EGuessStatus::Not_Isogram;
     }
-    else if (false) // if the guess isn't all lowercase
+    else if (!IsLowercase(Guess)) // if the guess isn't all lowercase
     {
-        return EGuessStatus::Not_Lowercase; // TODO write function
+        return EGuessStatus::Not_Lowercase;
     }
     else if (Guess.length() != GetHiddenWordLength()) // if the guess length is wrong
     {
@@ -33,10 +41,8 @@ EGuessStatus FBullCowGame::CheckGuessValidity(FString Guess) const
 
 void FBullCowGame::Reset()
 {
-    constexpr int32 MAX_TRIES = 8;
-    const FString HIDDEN_WORD = "planet";
+    const FString HIDDEN_WORD = "planet"; // MUST be an isogram
 
-    MyMaxTries = MAX_TRIES;
     MyHiddenWord = HIDDEN_WORD;
     MyCurrentTry = 1;
     bGameIsWon = false;
@@ -90,4 +96,17 @@ bool FBullCowGame::IsIsogram(FString Word) const
         }           
     }
     return true; // for example in cases were /0 is entered
+}
+
+bool FBullCowGame::IsLowercase(FString Word) const
+{
+    for (auto Letter : Word)
+    {
+        if (!islower(Letter))
+        {
+            // if not a lower case letter
+            return false;
+        }
+    }
+    return true;
 }

@@ -2,21 +2,24 @@
 This acts as the view in a MVC patter, and is responsibe for all 
 user interaction. For game logic, see FBullCowGame class.
 */
+#pragma once
 
 #include <iostream>
 #include <string>
 #include "FBullCowGame.h"
 
+// Unreal syntax
 using FText = std::string;
 using int32 = int;
 
+// method forward declarations
 void PrintIntro();
 void PlayGame();
 FText GetValidGuess();
 bool AskToPlayAgain();
 void PrintGameSummary();
 
-FBullCowGame BCGame;
+FBullCowGame BCGame; // declare a new game
 
 // the entry for our application
 int main() 
@@ -28,25 +31,33 @@ int main()
         bPlayAgain = AskToPlayAgain();
     } 
     while (bPlayAgain);
-    return 0;
+    return 0; // exit the application
 }
 
 void PrintIntro()
 {
-    std::cout << "\n\nWelcome to Bulls and Cows, a fun word game.\n\n";
-    std::cout << "Can you guess the " << BCGame.GetHiddenWordLength()
-        << " letter isogram I'm thinking of?\n";
+    std::cout << "\nWelcome to Bulls and Cows, a fun word game.\n";
     std::cout << std::endl;
-    return; // exit the application
+    std::cout << "          }   {         ___ " << std::endl;
+    std::cout << "          (o o)        (o o) " << std::endl;
+    std::cout << "   /-------\\ /          \\ /-------\\ " << std::endl;
+    std::cout << "  / | BULL |O            O| COW  | \\ " << std::endl;
+    std::cout << " *  |-,--- |              |------|  * " << std::endl;
+    std::cout << "    ^      ^              ^      ^ " << std::endl;
+    std::cout << "Can you guess the " << BCGame.GetHiddenWordLength();
+    std::cout << " letter isogram I'm thinking of?\n";
+    std::cout << std::endl;
+    return;
 }
 
+// plays a single round of the game
 void PlayGame()
 {
     BCGame.Reset();
     int32 MaxTries = BCGame.GetMaxTries();
 
     // loop asking for guesses while the game
-    //  is NOT won and there are still tries remaining
+    // is NOT won and there are still tries remaining
     constexpr int32 NUMBER_OF_TURNS = 5;
     while (!BCGame.IsGameWon() && BCGame.GetCurrentTry() <= MaxTries) {
         FText Guess = GetValidGuess();
@@ -69,25 +80,24 @@ FText GetValidGuess()
     do {
         // get a guess from the player
         int32 CurrentTry = BCGame.GetCurrentTry();
-        std::cout << "Try " << CurrentTry << ": Enter your guess: ";
+        std::cout << "Try " << CurrentTry << " of " << BCGame.GetMaxTries() << ": Enter your guess: ";
         std::getline(std::cin, Guess);
 
         Status = BCGame.CheckGuessValidity(Guess);
         switch (Status) {
         case EGuessStatus::Wrong_Length:
-            std::cout << "Please enter a " << BCGame.GetHiddenWordLength() << " letter word.\n";
+            std::cout << "Please enter a " << BCGame.GetHiddenWordLength() << " letter word.\n\n";
             break;
         case EGuessStatus::Not_Isogram:
-            std::cout << "Please enter a word without repeating letters.\n";
+            std::cout << "Please enter a word without repeating letters.\n\n";
             break;
         case EGuessStatus::Not_Lowercase:
-            std::cout << "Please enter all lowercase letters.\n";
+            std::cout << "Please enter all lowercase letters.\n\n";
             break;
         default:
             // assume guess is valid
             break;
         }
-        std::cout << std::endl;
     } while (Status != EGuessStatus::OK); // keep looping until we get no errors
     return Guess;
 }
